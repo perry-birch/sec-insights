@@ -1,11 +1,18 @@
-* Ensure the .env file has been updated to include your OPENAI_API_KEY *
+# Example
 
-Terminal commands:
+## Enviornment Setup
+
+- Create a Github Codespace from the desired branch
+- Open the Codespace in VSCode on your local computer
+
+## Terminal commands:
 
 ### First Terminal - Setup the Servers
 
 ```sh
 cd backend
+cp .env.development .env
+# * Ensure the .env file in backend has been updated to include your OPENAI_API_KEY  after copied *
 poetry shell
 poetry install
 set -a
