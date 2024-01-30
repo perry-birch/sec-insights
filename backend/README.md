@@ -17,7 +17,10 @@ Live at https://secinsights.ai/
     - This spins up the Postgres 15 DB & Localstack in their own docker containers.
     - The server will not run in a container but will instead run directly on your OS.
         - This is to allow for use of debugging tools like `pdb`
-1. Lastly, you will likely want to populate your local database with some sample SEC filings
+
+
+## Populate Database
+1. Lastly, you will likely want to populate your local database with some sample SEC filings from another terminal instance
     - We have a script for this! But first, open your `.env` file and replace the placeholder value for the `OPENAI_API_KEY` with your own OpenAI API key
         - At some point you will want to do the same for the other secret keys in here like `POLYGON_IO_API_KEY`, `AWS_KEY`, & `AWS_SECRET`
         - To follow the [SEC's Internet Security Policy](https://www.sec.gov/os/webmaster-faq#code-support), make sure to also replace the `SEC_EDGAR_COMPANY_NAME` & `SEC_EDGAR_EMAIL` values in the `.env` file with your own values.
