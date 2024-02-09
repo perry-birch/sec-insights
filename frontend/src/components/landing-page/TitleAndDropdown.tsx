@@ -75,7 +75,7 @@ export const TitleAndDropdown = () => {
       <div className="absolute left-4 top-4">
         <a href="https://www.llamaindex.ai/" target="_blank">
           <button className="flex items-center justify-center font-nunito text-lg font-bold ">
-            <img src="ai_logo_square.png" alt="Accelerated Innovations Logo Square" />
+            <img src="ai_logo_square.png" alt="Accelerated Innovations Logo Square" className="mx-2 rounded-lg" width={40} />
             <span>Hosted by Accelerated Innovation</span>
           </button>
         </a>
