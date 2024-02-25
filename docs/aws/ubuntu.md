@@ -37,6 +37,24 @@ apt-get install awscli
 apt-get install python3-dev
 ```
 
+## Cloudflare Tunnel Enables Exposing Publicly
+
+```sh
+# Setup Cloudflared
+mkdir -p --mode=0755 /usr/share/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
+echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bullseye main' | tee /etc/apt/sources.list.d/cloudflared.list
+apt-get update
+apt-get install cloudflared
+# ** Accept the prompt
+
+cloudflared service install ##REPLACE THIS WITH A REAL KEY##
+
+# service cloudflared start
+service cloudflared start
+```
+
+## Initializes the Docker Environment
 
 ```sh
 # move to the backend dir
@@ -116,11 +134,46 @@ poetry shell
 make seed_db
 ```
 
+## Initialize Frontend Service
+
+```sh
+# install nodejs related dependencies
+apt install ca-certificates curl gnupg
+
+mkdir -p /etc/apt/keyrings
+
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+
+export NODE_MAJOR=20
+
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+
+apt update
+
+# install nodejs
+apt install nodejs
+# ** Accept the prompt
+
+# install supporting files for frontend
+npm install
+
+# setup the env var
+cp .env.example .env
+
+# configure the frontend env
+echo "NEXT_PUBLIC_BACKEND_URL=https://sec-insights-api.vizidrix.com/" >> .env
+
+# enter enviornment set mode
+set -a
+
+# bind the enviornment variables
+source .env
+```
 
 ## Automate Frontend Service Start
 
 ```sh
-# Create and run service to launch frontend
+# create and run service to launch frontend
 cat > /etc/systemd/system/frontend.service << EOL
 [Unit]
 Description=SecInsights Frontend Service
@@ -134,6 +187,7 @@ Restart=always
 WantedBy=default.targetsystemctl daemon-reload
 EOL
 
+# sequence of steps to ensure service gets loaded
 systemctl daemon-reload
 
 systemctl stop frontend
@@ -148,7 +202,7 @@ journalctl -xe -u frontend
 ## Automate Backend Service Start
 
 ```sh
-# Create and run service to launch backend
+# create and run service to launch backend
 cat > /etc/systemd/system/backend.service << EOL
 [Unit]
 Description=SecInsights Backend Service
@@ -165,6 +219,7 @@ Environment=PATH="/root/.local/bin:$PATH"
 WantedBy=default.target
 EOL
 
+# sequence of steps to ensure service gets loaded
 systemctl daemon-reload
 
 systemctl enable backend
@@ -174,20 +229,3 @@ systemctl start backend
 journalctl -xe -u backend
 ```
 
-
-```sh
-# Setup Cloudflared
-
-mkdir -p --mode=0755 /usr/share/keyrings
-curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
-echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bullseye main' | tee /etc/apt/sources.list.d/cloudflared.list
-apt-get update
-apt-get install cloudflared
-
-cloudflared service install ##REPLACE THIS WITH A REAL KEY##
-
-# service cloudflared start
-service cloudflared start
-
-
-```
