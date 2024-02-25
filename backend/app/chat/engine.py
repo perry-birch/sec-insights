@@ -168,16 +168,21 @@ async def build_doc_id_to_index_map(
         )
         doc_id_to_index = {}
         for doc in documents:
-            llama_index_docs = fetch_and_read_document(doc)
-            storage_context.docstore.add_documents(llama_index_docs)
-            index = VectorStoreIndex.from_documents(
-                llama_index_docs,
-                storage_context=storage_context,
-                service_context=service_context,
-            )
-            index.set_index_id(str(doc.id))
-            index.storage_context.persist(persist_dir=persist_dir, fs=fs)
-            doc_id_to_index[str(doc.id)] = index
+            try:
+                llama_index_docs = fetch_and_read_document(doc)
+                storage_context.docstore.add_documents(llama_index_docs)
+                index = VectorStoreIndex.from_documents(
+                    llama_index_docs,
+                    storage_context=storage_context,
+                    service_context=service_context,
+                )
+                index.set_index_id(str(doc.id))
+                index.storage_context.persist(persist_dir=persist_dir, fs=fs)
+                doc_id_to_index[str(doc.id)] = index
+            except OtherError:
+                logger.error(
+                    "Another Error Occurred"
+                )
     return doc_id_to_index
 
 
